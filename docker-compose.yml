@@ -10,9 +10,9 @@ services:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD", "bash", "-c", "echo > /dev/tcp/localhost/3306 2>/dev/null"]
-      interval: 5s
+      interval: 1s
       timeout: 5s
-      retries: 10
+      retries: 50
     networks:
       - red
 
@@ -23,7 +23,7 @@ services:
     env_file: repositories/.env
     depends_on:
       db:
-        condition: service_healthy 
+        condition: service_healthy
     ports:
       - "3020:8000"
     networks:

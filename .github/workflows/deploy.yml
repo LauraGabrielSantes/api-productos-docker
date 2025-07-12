@@ -27,6 +27,6 @@ jobs:
           git clone https://github.com/LauraGabrielSantes/api-productos-docker
           cd api-productos-docker
           touch repositories/.env
-          echo $ENV >> repositories/.env
+          echo $ENV > repositories/.env
           docker-compose up --build -d
         "
