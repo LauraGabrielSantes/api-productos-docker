@@ -25,5 +25,6 @@ jobs:
         ssh -o StrictHostKeyChecking=no laura@$HOST "
           cd /home/laura/api-productos
           git pull origin main
+          cd api-productos-docker
           docker-compose up --build -d
         "
