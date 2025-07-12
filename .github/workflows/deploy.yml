@@ -32,9 +32,7 @@ jobs:
           fi
 
           # Crear archivo .env
-          cat <<EOT > repositories/.env
-          $ENV
-          EOT
+          echo "$ENV" > repositories/.env
 
           # Levantar contenedores
           docker-compose down
