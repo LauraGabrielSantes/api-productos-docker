@@ -22,11 +22,21 @@ jobs:
 
     - name: Deploy and Run FastAPI
       run: |
-        ssh -o StrictHostKeyChecking=no laura@$HOST "
-          cd /home/laura/api-productos
-          git clone https://github.com/LauraGabrielSantes/api-productos-docker
-          cd api-productos-docker
-          touch repositories/.env
-          echo $ENV > repositories/.env
+        ssh -o StrictHostKeyChecking=no laura@$HOST bash << 'EOF'
+          cd /home/laura
+          if [ -d api-productos-docker ]; then
+            cd api-productos-docker && git pull
+          else
+            git clone https://github.com/LauraGabrielSantes/api-productos-docker
+            cd api-productos-docker
+          fi
+
+          # Crear archivo .env
+          cat <<EOT > repositories/.env
+          $ENV
+          EOT
+
+          # Levantar contenedores
+          docker-compose down
           docker-compose up --build -d
-        "
+        EOF
