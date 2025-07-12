@@ -34,5 +34,5 @@ app.include_router(producto_router.router, prefix="/api", tags=["Productos"])
 
 @app.get("/")
 def raiz():
-    return {"mensaje": "API REST de productos y clientes"}
+    return {"mensaje": "API REST de productos y clientes :) "}
 
