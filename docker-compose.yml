@@ -1,39 +1,37 @@
 services:
-  backend:
-    build: .
-    container_name: backend
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_NAME: productos_db
-      DB_USER: user
-      DB_PASSWORD: pass
-    ports:
-      - "8000:8000"
   db:
-    image: mysql:8
-    container_name: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: productos_db
-      MYSQL_USER: user
-      MYSQL_PASSWORD: pass
+    image: mariadb:lts-ubi
+    container_name: mariadb
+    env_file: repositories/.env
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "bash", "-c", "echo > /dev/tcp/localhost/3306 2>/dev/null"]
       interval: 5s
       timeout: 5s
-      retries: 10   
+      retries: 10
+    networks:
+      - red
 
+  backend:
+    build:
+      context: .
+    container_name: backend
+    env_file: repositories/.env
+    depends_on:
+      db:
+        condition: service_healthy 
+    ports:
+      - "8000:8000"
+    networks:
+      - red
 
 volumes:
   mysql_data:
 
-    
-   
+networks:
+  red:
+    driver: bridge

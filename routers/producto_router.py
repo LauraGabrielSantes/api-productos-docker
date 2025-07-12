@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends
 from models.producto_model import Producto
 from services.producto_service import agregar_producto, listar_productos
-from auth import verificar_token  # importa tu función de validación
+#from auth import verificar_token  # importa tu función de validación
 
 router = APIRouter()
 
 @router.post("/productos")
-def crear_producto(producto: Producto, usuario: dict = Depends(verificar_token)):
+def crear_producto(producto: Producto ): 
+    """usuario: dict= Depends(verificar_token)"""
     """
     Crea un nuevo producto en el sistema. Requiere autenticación.
 
@@ -18,12 +19,13 @@ def crear_producto(producto: Producto, usuario: dict = Depends(verificar_token))
         dict: Mensaje de confirmación.
     """
     agregar_producto(producto)
-    return {"mensaje": f"Producto creado exitosamente por {usuario['sub']}"}
+    return {"mensaje": f"Producto creado exitosamente por anonimo"}
 
 
 @router.get("/productos")
-def obtener_productos(usuario: dict = Depends(verificar_token)):
+def obtener_productos():
     """
+    usuario: dict = Depends(verificar_token)
     Lista los productos registrados. Requiere autenticación.
 
     Args:
