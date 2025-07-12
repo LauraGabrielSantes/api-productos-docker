@@ -3,12 +3,13 @@ on:
   push:
     branches:
       - main
+
 env:
   HOST: ${{ secrets.HOST_NAME }}
   ENV:  ${{ secrets.ENV }}
+
 jobs:
   deploy:
-    name: Deploy to Server
     runs-on: ubuntu-latest
 
     steps:
@@ -20,21 +21,29 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SSH_KEY }}
 
+    - name: Create .env locally
+      run: |
+        echo "$ENV" > .env
+        # Debug: muestro las primeras líneas para verificar que no está vacío
+        head -n 5 .env
+
+    - name: Copy .env to server
+      run: |
+        scp -o StrictHostKeyChecking=no .env laura@$HOST:/home/laura/api-productos-docker/repositories/.env
+
     - name: Deploy and Run FastAPI
       run: |
         ssh -o StrictHostKeyChecking=no laura@$HOST bash << 'EOF'
-          cd /home/laura
-          if [ -d api-productos-docker ]; then
-            cd api-productos-docker && git pull
+          cd /home/laura/api-productos-docker
+
+          # Si ya existe repo, actualiza; si no, clona
+          if [ -d .git ]; then
+            git pull
           else
-            git clone https://github.com/LauraGabrielSantes/api-productos-docker
-            cd api-productos-docker
+            git clone https://github.com/LauraGabrielSantes/api-productos-docker .
           fi
 
-          # Crear archivo .env
-          echo "$ENV" > repositories/.env
-
-          # Levantar contenedores
+          # Ahora levanta los contenedores
           docker-compose down
           docker-compose up --build -d
         EOF
