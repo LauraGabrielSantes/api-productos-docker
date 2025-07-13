@@ -32,4 +32,17 @@ def obtener_productos():
     conexion.close()
     return resultados
 
+def eliminar_Producto(id):
+    """
+    Elimina un producto por ID de la base de datos.
+
+    Args:
+        id (int): ID del producto a eliminar.
+    """
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    cursor.execute("DELETE FROM productos WHERE id = %s", (id,))
+    conexion.commit()
+    conexion.close()
+
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from models.producto_model import Producto
-from services.producto_service import agregar_producto, listar_productos
+from services.producto_service import agregar_producto, listar_productos, eliminar_producto
 #from auth import verificar_token  # importa tu función de validación
 
 router = APIRouter()
@@ -35,4 +35,17 @@ def obtener_productos():
         list[dict]: Lista de productos.
     """
     return listar_productos()
+@router.delete("/productos/{id}")
+def borrar_producto(id: int):
+    """
+    Elimina un producto por ID.
 
+    Args:
+        id (int): ID del producto a eliminar.
+
+    Returns:
+        dict: Mensaje de confirmación.
+    """
+    
+    eliminar_producto(id)
+    return {"mensaje": f"Producto con ID {id} eliminado correctamente"}

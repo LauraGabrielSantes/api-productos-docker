@@ -1,5 +1,5 @@
 from models.producto_model import Producto
-from repositories.producto_repo import crear_producto, obtener_productos
+from repositories.producto_repo import crear_producto, obtener_productos, eliminar_Producto
 
 def agregar_producto(producto: Producto):
     """
@@ -18,3 +18,11 @@ def listar_productos():
         list[dict]: Lista de productos como diccionarios.
     """
     return obtener_productos()
+def eliminar_producto(id: int):
+    """
+    Elimina un producto usando su ID.
+
+    Args:
+        id (int): ID del producto.
+    """
+    eliminar_Producto(id)
