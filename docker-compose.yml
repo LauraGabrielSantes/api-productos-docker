@@ -1,6 +1,6 @@
 services:
   db:
-    image: mariadb:lts-ubi
+    image: mariadb:11
     container_name: mariadb
     env_file: repositories/.env
     ports:
@@ -9,12 +9,14 @@ services:
       - mysql_data:/var/lib/mysql
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD", "bash", "-c", "echo > /dev/tcp/localhost/3306 2>/dev/null"]
-      interval: 1s
-      timeout: 5s
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 200s
+      timeout: 150s
       retries: 50
     networks:
       - red
+    cpus: 0.5
+    mem_limit: 200m
 
   backend:
     build:
@@ -22,12 +24,13 @@ services:
     container_name: backend
     env_file: repositories/.env
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     ports:
       - "3020:8000"
     networks:
       - red
+    cpus: 0.5
+    mem_limit: 200m
 
 volumes:
   mysql_data:

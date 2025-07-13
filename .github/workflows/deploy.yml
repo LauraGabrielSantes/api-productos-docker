@@ -1,4 +1,5 @@
 name: Deploy productos
+
 on:
   push:
     branches:
@@ -13,37 +14,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up SSH key
-      uses: webfactory/ssh-agent@v0.9.0
-      with:
-        ssh-private-key: ${{ secrets.SSH_KEY }}
+      - name: Set up SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
 
-    - name: Create .env locally
-      run: |
-        echo "$ENV" > .env
-        # Debug: muestro las primeras líneas para verificar que no está vacío
-        head -n 5 .env
-
-    - name: Copy .env to server
-      run: |
-        scp -o StrictHostKeyChecking=no .env laura@$HOST:/home/laura/api-productos-docker/repositories/.env
-
-    - name: Deploy and Run FastAPI
-      run: |
-        ssh -o StrictHostKeyChecking=no laura@$HOST bash << 'EOF'
-          cd /home/laura/api-productos-docker
-
-          # Si ya existe repo, actualiza; si no, clona
+      - name: Clonar o actualizar repositorio en servidor
+        run: |
+          ssh -o StrictHostKeyChecking=no laura@$HOST bash << 'EOF'
+          cd /home/laura/api-productos-docker || mkdir -p /home/laura/api-productos-docker && cd /home/laura/api-productos-docker
           if [ -d .git ]; then
-            git pull
+              git pull
           else
-            git clone https://github.com/LauraGabrielSantes/api-productos-docker .
-          fi
+              git clone https://github.com/LauraGabrielSantes/api-productos-docker .
+          fi  
+          EOF
 
-          # Ahora levanta los contenedores
+      - name: Create .env locally
+        run: |
+          echo "$ENV" > .env
+          head -n 5 .env
+
+      - name: Copy .env to server
+        run: |
+          scp -o StrictHostKeyChecking=no .env laura@$HOST:/home/laura/api-productos-docker/repositories/.env
+
+      - name: Deploy and Run FastAPI
+        run: |
+          ssh -o StrictHostKeyChecking=no laura@$HOST bash << 'EOF'
+          cd /home/laura/api-productos-docker
           docker-compose down
           docker-compose up --build -d
-        EOF
+          EOF

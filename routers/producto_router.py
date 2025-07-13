@@ -19,7 +19,7 @@ def crear_producto(producto: Producto ):
         dict: Mensaje de confirmación.
     """
     agregar_producto(producto)
-    return {"mensaje": f"Producto creado exitosamente por anonimo"}
+    return {"mensaje": f"Producto creado exitosamente por admin"}
 
 
 @router.get("/productos")

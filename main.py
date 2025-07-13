@@ -1,9 +1,10 @@
 import os
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
 from auth import crear_token
 from routers import producto_router
 from fastapi.middleware.cors import CORSMiddleware
+from models.credenciales_model import Credenciales
+
 app = FastAPI()
 
 origins = os.getenv("FRONTEND_ORIGINS", "").split(",")
@@ -16,9 +17,6 @@ app.add_middleware(
 )
 print("CORS origins permitidos:", origins)
 
-class Credenciales(BaseModel):
-    username: str
-    password: str
 
 @app.post("/token")
 def login(datos: Credenciales):
