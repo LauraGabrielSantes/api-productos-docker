@@ -16,7 +16,7 @@ services:
     networks:
       - red
     cpus: 0.5
-    mem_limit: 200m
+    mem_limit: 150m
 
   backend:
     build:
@@ -30,7 +30,7 @@ services:
     networks:
       - red
     cpus: 0.5
-    mem_limit: 200m
+    mem_limit: 150m
 
 volumes:
   mysql_data:
