@@ -29,7 +29,7 @@ services:
       - "3020:8000"
     networks:
       - red
-    cpus: 0.3
+    cpus: 0.5
     mem_limit: 150m
 
 volumes:
